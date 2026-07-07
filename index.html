@@ -2203,13 +2203,25 @@ async function updateMilestone(stId) {
   closeModal(); refreshItemCard(s.task_id); showToast('Đã cập nhật ✓');
 }
 
-function toggleMilestoneDone(stId) {
+async function toggleMilestoneDone(stId) {
   const s = milestones.find(x => x.id === stId);
   if (!s) return;
-  s.status = s.status === 'done' ? 'todo' : 'done';
-  if (!isDemoMode) sb.from('wt_milestones').update({status: s.status}).eq('id', stId);
-  autoUpdateItemDeadline(s.task_id);
-  refreshItemCard(s.task_id);
+  const newStatus = s.status === 'done' ? 'todo' : 'done';
+  s.status = newStatus;
+  refreshItemCard(s.task_id);  // optimistic UI update
+  if (!isDemoMode) {
+    setSyncStatus('syncing');
+    const { error } = await sb.from('wt_milestones').update({ status: newStatus }).eq('id', stId);
+    if (error) {
+      s.status = newStatus === 'done' ? 'todo' : 'done';  // revert
+      refreshItemCard(s.task_id);
+      showToast('Lỗi lưu: ' + error.message);
+      setSyncStatus('error');
+      return;
+    }
+    setSyncStatus('synced');
+  }
+  await autoUpdateItemDeadline(s.task_id);
 }
 
 function deleteMilestone(stId) {
@@ -2221,14 +2233,14 @@ function deleteMilestone(stId) {
   refreshItemCard(taskId); showToast('Đã xóa milestone');
 }
 
-function autoUpdateItemDeadline(taskId) {
+async function autoUpdateItemDeadline(taskId) {
   const msList = milestones.filter(s => s.task_id === taskId && s.deadline);
   if (!msList.length) return;
   const lastDl = msList.map(s => s.deadline).sort().at(-1);
   const t = tasks.find(x => x.id === taskId);
   if (t && t.deadline !== lastDl) {
     t.deadline = lastDl;
-    if (!isDemoMode) sb.from('wt_tasks').update({deadline: lastDl}).eq('id', taskId);
+    if (!isDemoMode) await sb.from('wt_tasks').update({deadline: lastDl}).eq('id', taskId);
   }
 }
 
