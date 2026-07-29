@@ -793,6 +793,61 @@ body>*{position:relative;z-index:1}
 /* ── DIVIDER ── */
 .divider{height:1px;background:rgba(200,215,235,0.4);margin:6px 14px}
 
+
+
+/* ─── PHASE GROUPS ─── */
+.phase-group{margin-bottom:8px;border:1px solid rgba(200,215,235,0.45);border-radius:9px;overflow:hidden}
+.phase-header{
+  display:flex;align-items:center;gap:8px;
+  padding:8px 11px;cursor:pointer;
+  background:rgba(240,245,252,0.9);
+  -webkit-tap-highlight-color:transparent;transition:background .12s;
+}
+.phase-header:hover{background:rgba(232,240,250,0.95)}
+.phase-chev{font-size:0.6rem;color:#94a3b8;transition:transform .2s;display:inline-block}
+.phase-chev.open{transform:none}
+.phase-chev:not(.open){transform:rotate(-90deg)}
+.phase-name{font-size:0.8rem;font-weight:700;color:#334155;flex:1;letter-spacing:0.2px}
+.phase-count{
+  font-size:0.64rem;font-weight:700;padding:2px 8px;border-radius:10px;
+  background:rgba(99,102,241,0.1);color:#6366f1;flex-shrink:0;
+}
+.phase-milestones{padding:6px 8px 8px;background:#fff}
+
+/* ─── UI SCALE-UP for readability ─── */
+.task-card{padding:14px 16px !important}
+.task-title{font-size:0.95rem !important;font-weight:600 !important;line-height:1.35 !important}
+.task-meta{gap:7px !important}
+.task-dl,.task-pic{font-size:0.7rem !important;padding:3px 8px !important}
+.milestone-name{font-size:0.82rem !important;line-height:1.4 !important}
+.milestone-meta{gap:6px !important;margin-top:4px !important}
+.milestone-dl,.milestone-pic{font-size:0.68rem !important}
+.milestone-row{padding:8px 10px !important;gap:9px !important}
+.milestone-check{width:16px !important;height:16px !important}
+.milestone-section-label{font-size:0.72rem !important}
+.item-preview-name{font-size:0.82rem !important}
+.item-preview-dl{font-size:0.7rem !important}
+.item-preview-row{padding:7px 10px !important}
+.item-preview-tag{font-size:0.62rem !important;padding:2px 7px !important}
+.item-expand-btn{font-size:0.72rem !important;padding:7px 0 3px !important}
+.task-btn{font-size:0.75rem !important;padding:6px 12px !important}
+.milestone-btn{font-size:0.66rem !important;padding:3px 7px !important}
+.add-milestone-btn{font-size:0.7rem !important;padding:3px 10px !important}
+.task-note-chip{font-size:0.76rem !important;padding:7px 11px !important}
+.scope-name{font-size:0.9rem !important}
+.scope-tasks{font-size:0.72rem !important}
+.ws-title{font-size:0.92rem !important;font-weight:700 !important}
+.ws-subtitle{font-size:0.7rem !important}
+.brand-tab{font-size:0.78rem !important;padding:9px 15px !important}
+/* Delete icon in task header */
+.task-del-icon{
+  flex-shrink:0;width:22px;height:22px;border-radius:6px;
+  border:none;background:transparent;color:#cbd5e1;
+  font-size:0.72rem;cursor:pointer;transition:all .15s;
+  display:flex;align-items:center;justify-content:center;margin-left:2px;
+}
+.task-del-icon:hover{background:var(--red-soft,rgba(239,68,68,0.1));color:var(--red,#ef4444)}
+
 @media(min-width:600px){.scope-grid{grid-template-columns:repeat(4,1fr)}}
 /* ─── DESKTOP LAYOUT (1024px+) ─── */
 @media(min-width:1024px){
@@ -1145,10 +1200,10 @@ function loadDemoData(){
   ];
   milestones = [
     // t5: Deploy Saigon Bridge 3D Billboard
-    {id:'st1',task_id:'t5',name:'Final Design approval',deadline:d(3),priority:'high',pic_hvn:'Lợi',pic_dentsu:'Truong',status:'done',notes:''},
-    {id:'st2',task_id:'t5',name:'Deal cost & contract',deadline:d(5),priority:'high',pic_hvn:'Harry',pic_dentsu:'Truong',status:'inprogress',notes:'Đang negotiate giá với Prowtech'},
-    {id:'st3',task_id:'t5',name:'Production & fabrication',deadline:d(8),priority:'medium',pic_hvn:'Lợi',pic_dentsu:'Truong',status:'todo',notes:''},
-    {id:'st4',task_id:'t5',name:'Installation & on-air',deadline:d(14),priority:'high',pic_hvn:'Lợi',pic_dentsu:'Truong',status:'todo',notes:''},
+    {id:'st1',task_id:'t5',phase:'Planning',name:'Final Design approval',deadline:d(3),priority:'high',pic_hvn:'Lợi',pic_dentsu:'Truong',status:'done',notes:''},
+    {id:'st2',task_id:'t5',phase:'Planning',name:'Deal cost & contract',deadline:d(5),priority:'high',pic_hvn:'Harry',pic_dentsu:'Truong',status:'inprogress',notes:'Đang negotiate giá với Prowtech'},
+    {id:'st3',task_id:'t5',phase:'Execution',name:'Production & fabrication',deadline:d(8),priority:'medium',pic_hvn:'Lợi',pic_dentsu:'Truong',status:'todo',notes:''},
+    {id:'st4',task_id:'t5',phase:'Execution',name:'Installation & on-air',deadline:d(14),priority:'high',pic_hvn:'Lợi',pic_dentsu:'Truong',status:'todo',notes:''},
     // t1: Finalize OOH brief Q3 2026
     {id:'st5',task_id:'t1',name:'Collect media data from ICON',deadline:d(1),priority:'high',pic_hvn:'Harry',pic_dentsu:'Truc',status:'inprogress',notes:''},
     {id:'st6',task_id:'t1',name:'Draft brief document',deadline:d(2),priority:'high',pic_hvn:'Harry',pic_dentsu:'',status:'todo',notes:''},
@@ -2000,8 +2055,9 @@ function renderTask(t, barColor){
     <div class="task-top" onclick="toggleItemExpand('${t.id}')" style="cursor:pointer">
       <button class="task-check ${isDone?'done':''}" onclick="event.stopPropagation();toggleDone('${t.id}')">${isDone?'✓':''}</button>
       <div class="task-title ${isDone?'done':''}">${esc(t.name)}</div>
-      <span style="font-size:0.57rem;font-weight:700;padding:2px 6px;border-radius:5px;flex-shrink:0;background:${priS};color:${priC}">${pl}</span>
+      <span style="font-size:0.6rem;font-weight:700;padding:2px 7px;border-radius:5px;flex-shrink:0;background:${priS};color:${priC}">${pl}</span>
       ${itemBadge}
+      <button class="task-del-icon" onclick="event.stopPropagation();deleteTask('${t.id}')" title="Xóa hạng mục">✕</button>
     </div>
 
     <!-- META — always visible -->
@@ -2071,18 +2127,53 @@ function toggleEl(id){const e=document.getElementById(id);if(e)e.style.display=e
 function renderMilestoneSection(taskId, barColor) {
   const msList = milestones.filter(s => s.task_id === taskId);
   const done = msList.filter(s => s.status === 'done').length;
+
+  // Group milestones by phase, preserving insertion order of phases
+  const phaseOrder = [];
+  const phaseMap = {};
+  msList.forEach(s => {
+    const ph = s.phase || 'Chung';
+    if (!phaseMap[ph]) { phaseMap[ph] = []; phaseOrder.push(ph); }
+    phaseMap[ph].push(s);
+  });
+
+  const groupsHtml = phaseOrder.map(ph => {
+    const items = phaseMap[ph];
+    const phDone = items.filter(s => s.status === 'done').length;
+    const collapsed = collapsedPhases.has(taskId + '|' + ph);
+    return `<div class="phase-group">
+      <div class="phase-header" onclick="togglePhase('${taskId}','${esc(ph)}')">
+        <span class="phase-chev ${collapsed?'':'open'}">▾</span>
+        <span class="phase-name">${esc(ph)}</span>
+        <span class="phase-count">${phDone}/${items.length}</span>
+      </div>
+      <div class="phase-milestones" style="${collapsed?'display:none':''}">
+        ${items.map(s => renderMilestoneRow(s, barColor)).join('')}
+      </div>
+    </div>`;
+  }).join('');
+
   return `<div class="milestone-section">
     <div class="milestone-section-header">
       <div class="milestone-section-label">
-        <span>▸ Milestones</span>
+        <span>▸ Milestones theo Phase</span>
         ${msList.length ? `<span class="milestone-progress-mini">${done}/${msList.length}</span>` : ''}
       </div>
       <span class="add-milestone-btn" onclick="openAddMilestone('${taskId}')">＋ Thêm</span>
     </div>
     <div class="milestone-list">
-      ${msList.length ? msList.map(s => renderMilestoneRow(s, barColor)).join('') : '<div style="font-size:0.68rem;color:var(--text-muted);padding:2px 0">Chưa có milestone.</div>'}
+      ${msList.length ? groupsHtml : '<div style="font-size:0.68rem;color:var(--text-muted);padding:2px 0">Chưa có milestone.</div>'}
     </div>
   </div>`;
+}
+
+// Track collapsed phases
+const collapsedPhases = new Set();
+function togglePhase(taskId, phase) {
+  const key = taskId + '|' + phase;
+  if (collapsedPhases.has(key)) collapsedPhases.delete(key);
+  else collapsedPhases.add(key);
+  refreshItemCard(taskId);
 }
 
 function renderMilestoneRow(s, barColor) {
@@ -2109,10 +2200,21 @@ function renderMilestoneRow(s, barColor) {
 }
 
 /* ─────────── MILESTONE CRUD ─────────── */
+function fillPhaseSuggestions(taskId) {
+  const dl = document.getElementById('phase-suggestions');
+  if (!dl) return;
+  const phases = [...new Set(milestones.filter(m=>m.task_id===taskId).map(m=>m.phase||'Chung'))];
+  const common = ['Planning','Scouting','Production','Deployment','Review','Reporting'];
+  const all = [...new Set([...phases, ...common])];
+  dl.innerHTML = all.map(p=>`<option value="${esc(p)}">`).join('');
+}
+
 function openAddMilestone(taskId) {
   const t = tasks.find(x => x.id === taskId);
   openModal(`<div class="modal-title">Thêm Milestone</div>
     <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:14px">Hạng mục: ${t ? esc(t.name) : ''}</div>
+    <div class="mrow"><label>Nhóm / Phase</label><input id="msPhase" placeholder="VD: Planning, Scouting, Production..." list="phase-suggestions"></div>
+    <datalist id="phase-suggestions"></datalist>
     <div class="mrow"><label>Tên milestone *</label><input id="ms0" placeholder="VD: Final Design, Deal cost..."></div>
     <div class="mrow"><label>Deadline</label><input id="ms1" type="date"></div>
     <div class="mrow"><label>Priority</label>
@@ -2127,6 +2229,7 @@ function openAddMilestone(taskId) {
       <button class="m-cancel" onclick="closeModal()">Huỷ</button>
       <button class="m-save" onclick="saveMilestone('${taskId}')">Lưu</button>
     </div>`);
+  fillPhaseSuggestions(taskId);
 }
 
 async function saveMilestone(taskId) {
@@ -2134,6 +2237,7 @@ async function saveMilestone(taskId) {
   if (!name) { showToast('Nhập tên milestone'); return; }
   const row = {
     task_id: taskId, name,
+    phase: (document.getElementById('msPhase')?.value.trim() || 'Chung'),
     deadline: document.getElementById('ms1').value || null,
     priority: document.getElementById('ms2').value,
     pic_hvn: document.getElementById('ms3').value,
@@ -2155,6 +2259,8 @@ function openEditMilestone(stId) {
   const s = milestones.find(x => x.id === stId);
   if (!s) return;
   openModal(`<div class="modal-title">Sửa Milestone</div>
+    <div class="mrow"><label>Nhóm / Phase</label><input id="msPhase" value="${esc(s.phase||'Chung')}" placeholder="VD: Planning, Scouting..." list="phase-suggestions"></div>
+    <datalist id="phase-suggestions"></datalist>
     <div class="mrow"><label>Tên</label><input id="ms0" value="${esc(s.name)}"></div>
     <div class="mrow"><label>Deadline</label><input id="ms1" type="date" value="${s.deadline||''}"></div>
     <div class="mrow"><label>Priority</label>
@@ -2184,11 +2290,13 @@ function openEditMilestone(stId) {
       <button class="m-cancel" onclick="closeModal()">Huỷ</button>
       <button class="m-save" onclick="updateMilestone('${stId}')">Lưu</button>
     </div>`);
+  fillPhaseSuggestions(s.task_id);
 }
 
 async function updateMilestone(stId) {
   const u = {
     name: document.getElementById('ms0').value.trim(),
+    phase: (document.getElementById('msPhase')?.value.trim() || 'Chung'),
     deadline: document.getElementById('ms1').value || null,
     priority: document.getElementById('ms2').value,
     pic_hvn: document.getElementById('ms3').value,
